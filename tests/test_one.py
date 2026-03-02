@@ -6,15 +6,21 @@ from mono_one import say_hi
 
 
 def test_say_hi_default() -> None:
-    """Test say_hi with default argument."""
+    """Test say_hi with the default arguments."""
     result = say_hi()
     assert result == "Hi, Friend!"
 
 
-def test_say_hi_with_name() -> None:
-    """Test say_hi with custom name."""
-    result = say_hi("Bob")
+def test_say_hi_in_english() -> None:
+    """Say hi to the given name in English."""
+    result = say_hi(name="Bob", language="english")
     assert result == "Hi, Bob!"
+
+
+def test_say_hi_in_japanese() -> None:
+    """say hi to the given name in Japanese."""
+    result = say_hi(name="匠", language="japanese")
+    assert result == "ヤッホー, 匠!"
 
 
 def test_import_from_one() -> None:
@@ -22,4 +28,4 @@ def test_import_from_one() -> None:
     from mono_one import say_hi as imported_func
 
     assert callable(imported_func)
-    assert imported_func("Test") == "Hi, Test!"
+    assert imported_func(name="Test", language="english") == "Hi, Test!"

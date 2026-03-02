@@ -6,6 +6,7 @@ readme = "README.md"
 authors = [{ name = "Guen Prawiroatmodjo", email = "guen.p@ionq.co" }]
 requires-python = ">=3.12"
 dependencies = [
+    "batconf",
     "typer>=0.15",
     "mono-core",
     "mono-one",
