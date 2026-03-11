@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-KEY2_DEFAULT = 'mono_core.database: KEY2_DEFAULT'
+KEY2_DEFAULT = "mono_core.database: KEY2_DEFAULT"
 
 
 @dataclass
 class DatabaseClient:
-    """Example client class
-    """
+    """Example client class"""
+
     key1: str
     key2: str = KEY2_DEFAULT
 
@@ -17,8 +17,8 @@ class DatabaseClient:
         key2: str = KEY2_DEFAULT
 
     @classmethod
-    def from_config(cls, config: Config) -> 'MyClient':
+    def from_config(cls, config: Config) -> "MyClient":
         return cls(config.key1, config.key2)
 
     def fetch_data(self):
-        return f'MyClient data: {self.key1=}, {self.key2=}'
+        return f"MyClient data: {self.key1=}, {self.key2=}"

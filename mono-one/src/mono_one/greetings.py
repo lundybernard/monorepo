@@ -6,7 +6,7 @@ from .conf import configurable
 
 
 @configurable
-def say_hi(cfg, name: str = "", language: str = '') -> str:
+def say_hi(cfg, name: str = "", language: str = "") -> str:
     """Say hi to someone."""
     name = name if name else cfg.name
     language = language if language else cfg.language
@@ -15,6 +15,6 @@ def say_hi(cfg, name: str = "", language: str = '') -> str:
 
 
 hi_lang_map = {
-    'english': 'Hi',
-    'japanese': 'ヤッホー',
+    "english": "Hi",
+    "japanese": "ヤッホー",
 }

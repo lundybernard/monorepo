@@ -18,8 +18,8 @@ def test_say_hi_with_name() -> None:
 
 
 def test_say_hi_in_japanese() -> None:
-    result = say_hi(name='匠', language='japanese')
-    assert result == 'ヤッホー, 匠!'
+    result = say_hi(name="匠", language="japanese")
+    assert result == "ヤッホー, 匠!"
 
 
 def test_import_from_one() -> None:

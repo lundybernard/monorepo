@@ -26,7 +26,7 @@ def test_hello_command_with_name() -> None:
 
 
 def test_hello_command_with_env_variable() -> None:
-    with set_environ('MONO_NAME', 'Environment'):
+    with set_environ("MONO_NAME", "Environment"):
         result = runner.invoke(app, ["hello"])
         assert result.exit_code == 0
         assert "Hello, Environment!" in result.stdout
@@ -47,16 +47,17 @@ def test_hi_command_with_name() -> None:
 
 
 def test_hi_command_with_env_variable() -> None:
-   with set_environ('MONO_ONE_NAME', 'Environment'):
+    with set_environ("MONO_ONE_NAME", "Environment"):
         result = runner.invoke(app, ["hi"])
         assert result.exit_code == 0
         assert "Hi, Environment!" in result.stdout
 
+
 def test_hi_command_in_japanese() -> None:
-    with set_environ('MONO_ONE_LANGUAGE', 'japanese'):
-        result = runner.invoke(app, ['hi', '匠'])
+    with set_environ("MONO_ONE_LANGUAGE", "japanese"):
+        result = runner.invoke(app, ["hi", "匠"])
         assert result.exit_code == 0
-        assert 'ヤッホー, 匠!' in result.stdout
+        assert "ヤッホー, 匠!" in result.stdout
 
 
 def test_bye_command_default() -> None:

@@ -1,25 +1,25 @@
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from os import path
 from functools import wraps
+from typing import Any
 
-from batconf.manager import Configuration, ConfigProtocol
-from batconf.source import SourceList, SourceInterface
-from batconf.sources.argparse import NamespaceConfig, Namespace
+from batconf.manager import ConfigProtocol, Configuration
+from batconf.source import SourceInterface, SourceList
+from batconf.sources.argparse import Namespace, NamespaceConfig
 from batconf.sources.env import EnvConfig
 from batconf.sources.ini import IniConfig
 
-
 # Get the absolute path to the test config file relative to this file
-#_project_dir = path.dirname(path.realpath(__file__))
-#CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
+# _project_dir = path.dirname(path.realpath(__file__))
+# CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
 # get config.ini from the current working directory
-CONFIG_FILE_NAME = 'config.ini'
+CONFIG_FILE_NAME = "config.ini"
 
 
 @dataclass
 class MonoOneConfigSchema:
-    name: str = 'Friend'
-    language: str = 'english'
+    name: str = "Friend"
+    language: str = "english"
 
 
 def configurable(func: Callable) -> Callable:
@@ -49,8 +49,8 @@ def configurable(func: Callable) -> Callable:
 
 
 def get_config(
-    config_class: ConfigProtocol | Any = MonoOneConfigSchema,
-    cfg_path: str = 'mono_one',
+    config_class: ConfigProtocol = MonoOneConfigSchema,
+    cfg_path: str = "mono_one",
     cli_args: Namespace | None = None,
     config_file: SourceInterface | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
@@ -79,11 +79,7 @@ def get_config(
     config_sources: Sequence[SourceInterface | None] = [
         NamespaceConfig(cli_args) if cli_args else None,
         EnvConfig(),
-        (
-            config_file
-            if config_file
-            else IniConfig(config_file_name, config_env=config_env)
-        ),
+        (config_file or IniConfig(config_file_name, config_env=config_env)),
     ]
 
     source_list = SourceList(config_sources)

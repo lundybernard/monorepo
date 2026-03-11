@@ -25,6 +25,13 @@ class MonoConfigSchema:
     databaseB: DatabaseClient.Config
     mono_one: MonoOneConfigSchema
 
+
+@dataclass
+class RootConfigSchema:
+    mono: MonoConfigSchema
+    mono_one: MonoOneConfigSchema
+
+
 """
 Use of a default configuration file location bears some careful consideration
 Think carefully about the location of a default ~/.cfg/yourapp/ /etc/yourapp/ ?
@@ -38,14 +45,15 @@ based on OS standards useful.
 """
 
 # Get the absolute path to the test config.yaml file
-#_project_dir = path.dirname(path.realpath(__file__))
-#CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
+# _project_dir = path.dirname(path.realpath(__file__))
+# CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
 # get config file from current working directory
-CONFIG_FILE_NAME = 'config.ini'
+CONFIG_FILE_NAME = "config.ini"
+
 
 def get_config(
     config_class: ConfigProtocol | Any = MonoConfigSchema,
-    cfg_path: str = 'mono',
+    cfg_path: str = "mono",
     cli_args: Namespace | None = None,
     config_file: SourceInterface | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
@@ -74,13 +82,18 @@ def get_config(
     config_sources: Sequence[SourceInterface | None] = [
         NamespaceConfig(cli_args) if cli_args else None,
         EnvConfig(),
-        (
-            config_file
-            if config_file
-            else IniConfig(config_file_name, config_env=config_env)
-        ),
+        (config_file if config_file else IniConfig(config_file_name, config_env=config_env)),
     ]
 
     source_list = SourceList(config_sources)
 
     return Configuration(source_list, config_class, path=cfg_path)
+
+
+CFG = get_config()
+ROOT_CFG = get_config(RootConfigSchema, cfg_path=None)
+
+
+def set_cli_args(args: Namespace):
+    CFG._config_sources._sources.insert(0, NamespaceConfig(args))
+    ROOT_CFG._config_sources._sources.insert(0, NamespaceConfig(args))
