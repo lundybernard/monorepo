@@ -1,3 +1,5 @@
+# ruff: noqa: PT009,N805, TID252
+
 from unittest import TestCase
 
 from ..database import KEY2_DEFAULT, DatabaseClient
@@ -8,7 +10,7 @@ class DatabaseClientTests(TestCase):
         t.k1 = "+k1+"
         t.k2 = "+k2+"
 
-    def test_Config(t):
+    def test_Config(t):  # noqa: N802
         with t.subTest("defaults"):
             conf = DatabaseClient.Config(key1="+required+")
             t.assertEqual(conf.key1, "+required+")

@@ -9,9 +9,6 @@ from batconf.sources.argparse import Namespace, NamespaceConfig
 from batconf.sources.env import EnvConfig
 from batconf.sources.ini import IniConfig
 
-# Get the absolute path to the test config file relative to this file
-# _project_dir = path.dirname(path.realpath(__file__))
-# CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
 # Load config.ini from the current working directory
 CONFIG_FILE_NAME = "config.ini"
 
@@ -53,7 +50,6 @@ def get_config(
     config_class: ConfigProtocol = MonoOneConfigSchema,
     cfg_path: str = "mono_one",
     cli_args: Namespace | None = None,
-    config_file: SourceInterface | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
     config_env: str | None = None,
 ) -> Configuration:
@@ -89,7 +85,7 @@ def get_config(
     config_sources: Sequence[SourceInterface | None] = [
         NamespaceConfig(cli_args) if cli_args else None,
         EnvConfig(),
-        (config_file or IniConfig(config_file_name, config_env=env)),
+        IniConfig(config_file_name, config_env=env),
     ]
 
     source_list = SourceList(config_sources)

@@ -1,7 +1,6 @@
-# === Configuration Schema === #
-from collections.abc import Sequence
 from dataclasses import dataclass
 from os import environ
+from typing import TYPE_CHECKING
 
 from batconf.manager import ConfigProtocol, Configuration
 from batconf.source import SourceInterface, SourceList
@@ -11,12 +10,16 @@ from batconf.sources.ini import IniConfig
 from mono_core.database import DatabaseClient
 from mono_one.conf import MonoOneConfigSchema
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
+
+# === Configuration Schema === #
 @dataclass
 class MonoConfigSchema:
     name: str
-    databaseA: DatabaseClient.Config
-    databaseB: DatabaseClient.Config
+    databaseA: DatabaseClient.Config  # noqa: N815
+    databaseB: DatabaseClient.Config  # noqa: N815
     mono_one: MonoOneConfigSchema
 
 
@@ -27,15 +30,9 @@ Think carefully about the location of a default ~/.cfg/yourapp/ /etc/yourapp/ ?
   Windows has its own concept of appdata to conform to.
 Your choice in configuration file location is entirely up to you,
   and may depend heavily on your application's needs.
-
-Let us know if you would find some default settings 
-based on OS standards useful.
 """
 
-# Get the absolute path to the test config.yaml file
-# _project_dir = path.dirname(path.realpath(__file__))
-# CONFIG_FILE_NAME = path.join(_project_dir, '../config.ini')
-# Load config file from current working directory
+# Load the config file from the current working directory
 CONFIG_FILE_NAME = "config.ini"
 
 
@@ -43,7 +40,6 @@ def get_config(
     config_class: ConfigProtocol = MonoConfigSchema,
     cfg_path: str = "mono",
     cli_args: Namespace | None = None,
-    config_file: SourceInterface | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
     config_env: str | None = None,
 ) -> Configuration:
@@ -80,7 +76,7 @@ def get_config(
     config_sources: Sequence[SourceInterface | None] = [
         NamespaceConfig(cli_args) if cli_args else None,
         EnvConfig(),
-        (config_file or IniConfig(config_file_name, config_env=env)),
+        IniConfig(config_file_name, config_env=env),
     ]
 
     source_list = SourceList(config_sources)

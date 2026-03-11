@@ -1,3 +1,5 @@
+# ruff: noqa: PT009, PT027, N803, N805, TID252
+
 from configparser import ConfigParser
 from dataclasses import dataclass
 from unittest import TestCase
@@ -12,7 +14,7 @@ from ..conf import (
 
 SRC = "mono_one.conf"
 
-EXAMPLE_CONFIG_INI = """
+EXAMPLE_confIG_INI = """
 [batconf]
 default_env = example
 
@@ -30,10 +32,10 @@ key = alt_value
 """
 
 CONFIG_PARSER_ENVS = ConfigParser()
-CONFIG_PARSER_ENVS.read_string(EXAMPLE_CONFIG_INI)
+CONFIG_PARSER_ENVS.read_string(EXAMPLE_confIG_INI)
 
 
-class Test_get_config(TestCase):
+class get_config_Tests(TestCase):  # noqa: N801
     def setUp(t) -> None:
         patches = [
             "IniConfig",
@@ -84,10 +86,10 @@ class Test_get_config(TestCase):
         t.IniConfig.return_value = None
         EnvConfig.return_value = None
 
-        CONF = get_config(t.ConfigSchema)
+        conf = get_config(t.ConfigSchema)
 
-        t.assertEqual(CONF.AModule.arg_3, "dataclass_default_arg_3")
-        t.assertEqual(CONF.BModule.arg_1, "dataclass_default_isodate")
+        t.assertEqual(conf.AModule.arg_3, "dataclass_default_arg_3")
+        t.assertEqual(conf.BModule.arg_1, "dataclass_default_isodate")
 
     def test_arg_cli_args(t):
         cli_args = Namespace()
@@ -120,12 +122,11 @@ class Test_get_config(TestCase):
         t.IniConfig.assert_called_with("config.ini", config_env=config_env)
 
     def test_environment_variable_config_env(t):
-        """The BATCONF_ENV value is used for config_env,
+        """The BATconf_ENV value is used for config_env,
         it is used as a fallback value
         """
         config_env = "configuration file environment"
-        config_env_arg = "argument value"
-        with set_environ("BATCONF_ENV", config_env):
+        with set_environ("BATconf_ENV", config_env):
             get_config(t.ConfigSchema)
             t.IniConfig.assert_called_with("config.ini", config_env=config_env)
 
@@ -136,4 +137,4 @@ class Test_get_config(TestCase):
 
         conf = get_config(t.ConfigSchema)
         with t.assertRaises(AttributeError):
-            _ = conf._sir_not_appearing_in_this_film
+            _ = conf.sir_not_appearing_in_this_film

@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from os import environ
 
 from mono_core.database import KEY2_DEFAULT
-from pytest import raises
+from pytest import raises  # noqa: PT013
 
 from mono.conf import MonoConfigSchema, get_config
 
