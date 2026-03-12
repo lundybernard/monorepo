@@ -2,6 +2,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import wraps
 from os import environ
+from typing import Any, Protocol, TypeVar
 
 from batconf.manager import ConfigProtocol, Configuration
 from batconf.source import SourceInterface, SourceList
@@ -19,7 +20,30 @@ class MonoOneConfigSchema:
     language: str = "english"
 
 
-def configurable(func: Callable) -> Callable:
+T_co = TypeVar("T_co", covariant=True)
+
+
+class ConfigurableFunc(Protocol[T_co]):
+    def __call__(
+        self,
+        *,
+        cfg: Configuration,
+        **kwargs: object,
+    ) -> T_co: ...
+
+
+class ConfiguredCallable[R](Protocol):
+    def __call__(
+        self,
+        *,
+        cli_args: Namespace | None = None,
+        config_file_name: str = CONFIG_FILE_NAME,
+        config_env: str | None = None,
+        **kwargs: object,
+    ) -> R: ...
+
+
+def configurable[R](func: Callable[..., R]) -> ConfiguredCallable[R]:
     """Wrap a function so its defaults can be supplied from configuration.
 
     The wrapped function receives a ``cfg`` object built by ``get_config()``.
@@ -29,11 +53,12 @@ def configurable(func: Callable) -> Callable:
 
     @wraps(func)
     def wrapper(
+        *,
         cli_args: Namespace | None = None,
         config_file_name: str = CONFIG_FILE_NAME,
         config_env: str | None = None,
-        **kwargs,
-    ):
+        **kwargs: object,
+    ) -> R:
         # Fetch the configuration using get_config
         cfg = get_config(
             cli_args=cli_args,
@@ -47,7 +72,7 @@ def configurable(func: Callable) -> Callable:
 
 
 def get_config(
-    config_class: ConfigProtocol = MonoOneConfigSchema,
+    config_class: ConfigProtocol | Any = MonoOneConfigSchema,
     cfg_path: str = "mono_one",
     cli_args: Namespace | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
