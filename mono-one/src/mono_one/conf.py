@@ -123,9 +123,9 @@ def get_config(
 
 
 __all__ = [
-    "MonoOneConfigSchema",
     "Configuration",
+    "MonoOneConfigSchema",
+    "Namespace",
     "configurable",
     "get_config",
-    "Namespace",
 ]
