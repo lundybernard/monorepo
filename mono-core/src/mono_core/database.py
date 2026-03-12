@@ -20,5 +20,5 @@ class DatabaseClient:
     def from_config(cls, config: Config) -> "DatabaseClient":
         return cls(config.key1, config.key2)
 
-    def fetch_data(self):
+    def fetch_data(self) -> str:
         return f"DatabaseClient data: key1={self.key1}, key2={self.key2}"

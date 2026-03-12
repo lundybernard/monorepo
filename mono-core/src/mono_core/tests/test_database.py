@@ -6,11 +6,11 @@ from ..database import KEY2_DEFAULT, DatabaseClient
 
 
 class DatabaseClientTests(TestCase):
-    def setUp(t):
+    def setUp(t) -> None:
         t.k1 = "+k1+"
         t.k2 = "+k2+"
 
-    def test_Config(t):  # noqa: N802
+    def test_Config(t) -> None:  # noqa: N802
         with t.subTest("defaults"):
             conf = DatabaseClient.Config(key1="+required+")
             t.assertEqual(conf.key1, "+required+")
@@ -21,18 +21,18 @@ class DatabaseClientTests(TestCase):
             t.assertEqual(conf.key1, t.k1)
             t.assertEqual(conf.key2, t.k2)
 
-    def test___init__(t):
+    def test___init__(t) -> None:
         dc = DatabaseClient(key1=t.k1, key2=t.k2)
         t.assertEqual(dc.key1, t.k1)
         t.assertEqual(dc.key2, t.k2)
 
-    def test_from_config(t):
+    def test_from_config(t) -> None:
         config = DatabaseClient.Config(key1=t.k1, key2=t.k2)
         dc = DatabaseClient.from_config(config=config)
         t.assertEqual(dc.key1, t.k1)
         t.assertEqual(dc.key2, t.k2)
 
-    def test_fetch_data(t):
+    def test_fetch_data(t) -> None:
         dc = DatabaseClient(key1=t.k1, key2=t.k2)
         t.assertEqual(
             dc.fetch_data(),

@@ -1,10 +1,11 @@
+from argparse import Namespace
 from dataclasses import dataclass
 from os import environ
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from batconf.manager import ConfigProtocol, Configuration
 from batconf.source import SourceInterface, SourceList
-from batconf.sources.argparse import Namespace, NamespaceConfig
+from batconf.sources.argparse import NamespaceConfig
 from batconf.sources.env import EnvConfig
 from batconf.sources.ini import IniConfig
 from mono_core.database import DatabaseClient
@@ -37,7 +38,7 @@ CONFIG_FILE_NAME = "config.ini"
 
 
 def get_config(
-    config_class: ConfigProtocol = MonoConfigSchema,
+    config_class: ConfigProtocol | Any = MonoConfigSchema,
     cfg_path: str = "mono",
     cli_args: Namespace | None = None,
     config_file_name: str = CONFIG_FILE_NAME,
@@ -82,3 +83,10 @@ def get_config(
     source_list = SourceList(config_sources)
 
     return Configuration(source_list, config_class, path=cfg_path)
+
+
+__all__ = [
+    "Configuration",
+    "MonoConfigSchema",
+    "get_config",
+]

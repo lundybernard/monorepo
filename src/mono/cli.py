@@ -9,7 +9,7 @@ from mono_core import say_hello
 from mono_one import say_hi
 from mono_two import say_bye
 
-from .conf import get_config
+from .conf import Configuration, get_config
 
 HELP_TEXT = """A minimal Python CLI monorepo template.
 
@@ -89,7 +89,7 @@ def hi(
     # mono_one.greetings.say_hi is configurable,
     # so we can pass the CLI args to it, and it will use them.
 
-    greeting = say_hi(
+    greeting: str = say_hi(
         cli_args=Namespace(**ctx.obj),
         config_env=ctx.obj["batconf.env"],
     )
@@ -120,6 +120,6 @@ def config(
     typer.echo(_cfg_from_ctx(ctx))
 
 
-def _cfg_from_ctx(ctx: typer.Context):
+def _cfg_from_ctx(ctx: typer.Context) -> Configuration:
     args = Namespace(**ctx.obj)
     return get_config(cli_args=args, config_env=ctx.obj["batconf.env"])

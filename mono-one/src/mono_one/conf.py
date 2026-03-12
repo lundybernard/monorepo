@@ -1,12 +1,16 @@
+from argparse import Namespace
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import wraps
 from os import environ
 from typing import Any, Protocol, TypeVar
 
-from batconf.manager import ConfigProtocol, Configuration
+from batconf.manager import (
+    ConfigProtocol,
+    Configuration,
+)
 from batconf.source import SourceInterface, SourceList
-from batconf.sources.argparse import Namespace, NamespaceConfig
+from batconf.sources.argparse import NamespaceConfig
 from batconf.sources.env import EnvConfig
 from batconf.sources.ini import IniConfig
 
@@ -116,3 +120,12 @@ def get_config(
     source_list = SourceList(config_sources)
 
     return Configuration(source_list, config_class, path=cfg_path)
+
+
+__all__ = [
+    "MonoOneConfigSchema",
+    "Configuration",
+    "configurable",
+    "get_config",
+    "Namespace",
+]

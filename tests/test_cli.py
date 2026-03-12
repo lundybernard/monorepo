@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from os import environ
 
@@ -135,7 +136,7 @@ def test_all_commands_in_help() -> None:
 
 
 @contextmanager
-def set_environ(key: str, value: str):
+def set_environ(key: str, value: str) -> Iterator[None]:
     try:
         environ[key] = value
         yield

@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from contextlib import contextmanager
 from os import environ
 
@@ -7,7 +8,7 @@ from pytest import raises  # noqa: PT013
 from mono.conf import MonoConfigSchema, get_config
 
 
-def test_get_config():
+def test_get_config() -> None:
     """Bare get_config() returns a Project-level Configuration object.
     Submodule configs can be accessed using their namespace.
     """
@@ -17,7 +18,7 @@ def test_get_config():
     assert cfg.databaseA.key2 == KEY2_DEFAULT
 
 
-def test_reusable_configuration_schemas():
+def test_reusable_configuration_schemas() -> None:
     """
     In this example, we demonstrate reusing the Client.Config Schema
     to provide configurations for multiple clients of the same type.
@@ -30,7 +31,7 @@ def test_reusable_configuration_schemas():
     assert cfg.databaseB.key2 == KEY2_DEFAULT
 
 
-def test_environment_variable():
+def test_environment_variable() -> None:
     """Setting an environment variable, using the project namespace
 
     The environment variable name is the namespace-path to the cfg key
@@ -63,7 +64,7 @@ def test_config_env_environment_variable() -> None:
 
 
 @contextmanager
-def set_environ(key: str, value: str):
+def set_environ(key: str, value: str) -> Iterator[None]:
     try:
         environ[key] = value
         yield
