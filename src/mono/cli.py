@@ -83,15 +83,14 @@ def hi(
     language: str = typer.Option(None, "-l", "--language"),
 ) -> None:
     """Say hi to someone (using mono_one)."""
-    # Set mono_one package-level config values
-    ctx.obj["mono_one.name"] = hi_name
-    ctx.obj["mono_one.language"] = language
-    # mono_one.greetings.say_hi is configurable,
-    # so we can pass the CLI args to it, and it will use them.
+    # Set mono_one configuration values
+    ctx.obj["mono.mono_one.name"] = hi_name
+    ctx.obj["mono.mono_one.language"] = language
+    cfg = _cfg_from_ctx(ctx)
 
     greeting: str = say_hi(
-        cli_args=Namespace(**ctx.obj),
-        config_env=ctx.obj["batconf.env"],
+        name=cfg.mono_one.name,
+        language=cfg.mono_one.language,
     )
     typer.echo(greeting)
 
@@ -121,5 +120,8 @@ def config(
 
 
 def _cfg_from_ctx(ctx: typer.Context) -> Configuration:
+    """get a new config object,
+    Using the CLI arguments as the first source for values
+    """
     args = Namespace(**ctx.obj)
     return get_config(cli_args=args, config_env=ctx.obj["batconf.env"])

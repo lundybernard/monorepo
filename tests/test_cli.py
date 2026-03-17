@@ -84,8 +84,8 @@ def test_hi_command_with_name() -> None:
 
 def test_hi_command_with_env_variables() -> None:
     with (
-        set_environ("MONO_ONE_NAME", "Environment"),
-        set_environ("MONO_ONE_LANGUAGE", "japanese"),
+        set_environ("MONO_MONO_ONE_NAME", "Environment"),
+        set_environ("MONO_MONO_ONE_LANGUAGE", "japanese"),
     ):
         result = runner.invoke(app, ["hi"])
         assert result.exit_code == 0
@@ -93,7 +93,7 @@ def test_hi_command_with_env_variables() -> None:
 
 
 def test_hi_command_in_japanese() -> None:
-    with set_environ("MONO_ONE_LANGUAGE", "japanese"):
+    with set_environ("MONO_MONO_ONE_LANGUAGE", "japanese"):
         result = runner.invoke(app, ["hi", "匠"])
         assert result.exit_code == 0
         assert "ヤッホー, 匠!" in result.stdout

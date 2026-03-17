@@ -2,22 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TypedDict, Unpack
 
-from .conf import Configuration, configurable
-
-
-class SayHiKwargs(TypedDict, total=False):
-    name: str
-    language: str
-
-
-@configurable
-def say_hi(*, cfg: Configuration, **kwargs: Unpack[SayHiKwargs]) -> str:
-    """Say hi to someone."""
-    name = kwargs.get("name") or cfg.name
-    language = kwargs.get("language") or cfg.language
-
+def say_hi(name: str = "Friend", language: str = "english") -> str:
+    """Generate a greeting in the specified language."""
     return f"{hi_lang_map[language]}, {name}!"
 
 
