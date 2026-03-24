@@ -15,6 +15,7 @@ This template provides:
 
 - **Modern Python packaging** with [hatchling](https://hatch.pypa.io/) and [hatch-vcs](https://github.com/ofek/hatch-vcs) for automatic versioning
 - **CLI framework** using [Typer](https://typer.tiangolo.com/) with type hints and autocomplete support
+- **Configuration management** with [batconf](https://github.com/lundybernard/batconf) — layered config from CLI args, environment variables, INI files, and dataclass defaults
 - **Code quality** with [Ruff](https://docs.astral.sh/ruff/) for linting/formatting and [mypy](https://mypy-lang.org/) for type checking
 - **Testing** with [pytest](https://pytest.org/) and coverage reporting
 - **Pre-commit hooks** configured and ready to use
@@ -139,6 +140,148 @@ mono --help
 ```
 
 This example demonstrates the monorepo structure with three subpackages (`mono-core`, `mono-one`, `mono-two`). The CLI imports from these subpackages to show how they work together.
+
+## Configuration Management
+
+This template uses [batconf](https://github.com/lundybernard/batconf) for layered configuration. Values are resolved in priority order:
+
+1. **CLI arguments** (highest priority)
+2. **Environment variables**
+3. **INI configuration file**
+4. **Dataclass defaults** (lowest priority)
+
+### Defining Your Config Schema
+
+Configuration is defined as dataclasses in `src/yourpackage/conf.py`. Each field maps to a config key. Required fields have no default; optional fields have one:
+
+```python
+# src/yourpackage/conf.py
+from dataclasses import dataclass
+
+
+@dataclass
+class YourPackageConfig:
+    api_key: str  # required — must be set via CLI, env var, or config file
+    name: str = "World"  # optional — falls back to default
+```
+
+Subpackages define their own schemas and expose them to the top-level config:
+
+```python
+# yourpackage-myfeature/src/yourpackage_myfeature/conf.py
+@dataclass
+class MyFeatureConfig:
+    host: str = "localhost"
+    port: int = 8080
+```
+
+```python
+# src/yourpackage/conf.py
+from yourpackage_myfeature.conf import MyFeatureConfig
+
+
+@dataclass
+class YourPackageConfig:
+    api_key: str
+    name: str = "World"
+    myfeature: MyFeatureConfig
+```
+
+### INI Configuration File
+
+Create a `config.ini` in your working directory. Use sections to define environments:
+
+```ini
+[batconf]
+default_env = dev
+
+[dev]
+[dev.yourpackage]
+name = Alice
+
+[dev.yourpackage.myfeature]
+host = dev.example.com
+port = 9090
+
+[prod]
+[prod.yourpackage.myfeature]
+host = prod.example.com
+```
+
+Select an environment at runtime with the `--env` flag or the `BATCONF_ENV` environment variable:
+
+```bash
+mono --env test config
+# or
+BATCONF_ENV=test mono config
+```
+
+### Environment Variables
+
+Config keys map to environment variables by uppercasing the dotted path. For example, `yourpackage.myfeature.host` maps to `YOURPACKAGE_MYFEATURE_HOST`:
+
+```bash
+export YOURPACKAGE_API_KEY=secret
+export YOURPACKAGE_MYFEATURE_HOST=staging.example.com
+yourpackage mycommand
+```
+
+### Using Config in Commands
+
+Load configuration inside a command via `get_config()`, passing any CLI overrides through the Typer context:
+
+```python
+# src/yourpackage/cli.py
+from .conf import get_config
+
+
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    env: str | None = typer.Option(
+        None,
+        "--env",
+        "-e",
+        help="Config environment"
+    ),
+    name: str | None = typer.Option(None, "--name", "-n"),
+) -> None:
+    ctx.ensure_object(dict)
+    ctx.obj = {"batconf.env": env, "yourpackage.name": name}
+
+
+@app.command()
+def greet(ctx: typer.Context) -> None:
+    """Greet someone using config."""
+    from argparse import Namespace
+    cfg = get_config(
+        cli_args=Namespace(**ctx.obj),
+        config_env=ctx.obj["batconf.env"]
+    )
+    typer.echo(f"Hello, {cfg.name}!")
+```
+
+### Changing the Config File Location
+
+By default, `get_config()` looks for `config.ini` in the current working directory. To use a user-level config file instead, update `CONFIG_FILE_NAME` in `conf.py`:
+
+```python
+# src/yourpackage/conf.py
+from pathlib import Path
+
+
+CONFIG_FILE_NAME = str(Path.home() / '.config' / 'yourpackage' / 'config.ini')
+```
+
+This is a good default for tools installed system-wide, as it keeps configuration in a standard, user-writable location. Users can still override individual values via environment variables or CLI flags without touching the file.
+
+### Inspecting Config
+
+The `config` command (defined in `cli.py`) prints the resolved configuration and its sources:
+
+```bash
+yourpackage config
+```
 
 ## Development Workflow
 
@@ -283,6 +426,7 @@ See the example structure in this repository (`mono-core`, `mono-one`, `mono-two
 
 **Core:**
 - `typer>=0.15` - CLI framework with rich features
+- `batconf` - Layered configuration management
 
 **Development:**
 - `pytest>=8` - Testing framework
